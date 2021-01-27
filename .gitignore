@@ -1,5 +1,6 @@
 # Custom 
 Data/
+mnist_data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

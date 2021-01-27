@@ -76,7 +76,8 @@ def show_image(dataset, title, ROWS=5, COLUMNS=10):
         plt.subplot(ROWS, COLUMNS, i)
         plt.axis('off')
         plt.imshow(dataset.data[i])
-    fig.suptitle(title);
+    fig.suptitle(title)
+    plt.show()
 
 def get_accuracy(model, dataloader, device):
     correct = 0 
@@ -186,7 +187,7 @@ def predict(model, image, device):
     
     return torch.argmax(probs)
 
-def test_model(MODEL_NAME, model, valset, device, ROWS = 5, COLUMNS = 10):
+def test_model(MODEL_NAME, model, valset, device, ROWS = 1, COLUMNS = 1):
     model = model.to(device)
     model.load_state_dict(torch.load(MODEL_NAME))
 
@@ -204,49 +205,62 @@ def test_model(MODEL_NAME, model, valset, device, ROWS = 5, COLUMNS = 10):
 
         title = f'{torch.argmax(probs)} ({torch.max(probs * 100):.0f}%)'
         plt.title(title, fontsize=7)
-    fig.suptitle('Test predictions');
+    fig.suptitle('Test predictions')
+    plt.show()
 
-# parameters
-RANDOM_SEED = 42
-LEARNING_RATE = 0.001
-BATCH_SIZE = 32
-NUM_EPOCHS = 15
+def flow():
+    # parameters
+    RANDOM_SEED = 42
+    LEARNING_RATE = 0.001
+    BATCH_SIZE = 32
+    NUM_EPOCHS = 15
 
-# dataset properties
-IMG_SIZE = 32
-N_CLASSES = 10
+    # dataset properties
+    IMG_SIZE = 32
+    N_CLASSES = 10
 
-# Load and Display Data
-trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
-show_image(trainset, 'MNIST Dataset - preview')
+    # Load and Display Data
+    trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
+    show_image(trainset, 'MNIST Dataset - preview')
 
-# Defining Model and Functions
-torch.manual_seed(RANDOM_SEED)
-model = Model(N_CLASSES).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
-criterion = nn.CrossEntropyLoss()
+    # Defining Model and Functions
+    torch.manual_seed(RANDOM_SEED)
+    model = Model(N_CLASSES).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    criterion = nn.CrossEntropyLoss()
 
-# Check Model
-check_valid_model(trainloader, model, device)
+    # Check Model
+    check_valid_model(trainloader, model, device)
 
-# Training Model
-model, optimizer, losses, accs = train_model(model, criterion, optimizer, trainloader, valloader, NUM_EPOCHS, device)
+    # Training Model
+    model, optimizer, losses, accs = train_model(model, criterion, optimizer, trainloader, valloader, NUM_EPOCHS, device)
 
-# Displaying Plots
-plot_metric(losses[0], losses[1], 'Loss')
-plot_metric(accs[0], accs[1], 'Accuracy')
+    # Displaying Plots
+    plot_metric(losses[0], losses[1], 'Loss')
+    plot_metric(accs[0], accs[1], 'Accuracy')
 
-# Saving Model
-MODEL_NAME = 'model.dth'
-torch.save(model.state_dict(), MODEL_NAME)
+    # Saving Model
+    MODEL_NAME = 'model.dth'
+    torch.save(model.state_dict(), MODEL_NAME)
 
-# Test Model
-test_model(MODEL_NAME, model, valset, device)
+    # Test Model
+    test_model(MODEL_NAME, model, valset, device)
 
-# Predict Image
-image = valset[5][0].unsqueeze(0)
-pred = predict(model, image, device)
-plt.imshow(image[0][0])
-plt.show()
-print(pred)
+    # Predict Image
+    image = valset[5][0].unsqueeze(0)
+    pred = predict(model, image, device)
+    plt.imshow(image[0][0])
+    plt.show()
+    print(pred)
 
+if __name__ == "__main__":
+    # flow()
+    BATCH_SIZE = 32
+    N_CLASSES = 10
+
+    trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
+    show_image(trainset, 'MNIST Dataset - preview')
+
+    model = Model(N_CLASSES).to(device)
+    MODEL_NAME = 'model.dth'
+    test_model(MODEL_NAME, model, valset, device)
