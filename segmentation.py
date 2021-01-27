@@ -33,7 +33,6 @@ def crop(stat, extract):
 
 def segment(img, stride = 20):
     digits = []
-    # _, img = cv2.threshold(img, 127, 255, cv2.THRESH_TOZERO)
 
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(img, connectivity = 4)
     for i in range(1,nb_components):
@@ -44,7 +43,7 @@ def segment(img, stride = 20):
         # print(stats[i])
         # show(extracted_digit)
 
-        if area < 20:
+        if area < 45:
             continue
 
         join = 0
@@ -89,3 +88,5 @@ if __name__ == "__main__":
             anom.append(i)
     print(anom)
     print(len(anom))
+    anom_imgs = [imgs[i] for i in anom]
+    show(*anom_imgs[:10])
