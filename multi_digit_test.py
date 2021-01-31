@@ -76,25 +76,25 @@ def test_set(model, imgs, labels):
     return incorrect, corr_areas, corr_widths
 
 if __name__ == "__main__":
-    imgs = np.load('Data/data0.npy')
-    labels = np.load('Data/lab0.npy')
+    # imgs = np.load('Data/data0.npy')
+    # labels = np.load('Data/lab0.npy')
     
-    model = Model(10).to(device)
-    model.load_state_dict(torch.load('model.dth'))
+    # model = Model(10).to(device)
+    # model.load_state_dict(torch.load('model.dth'))
 
-    incorrect, corr_areas, corr_widths = test_set(model, imgs, labels)
-    np.save('Data/incorrect', incorrect)
-    np.save('Data/corr_areas', corr_areas)
-    np.save('Data/corr_widths', corr_widths)
+    # incorrect, corr_areas, corr_widths = test_set(model, imgs, labels)
+    # np.save('Data/incorrect', incorrect)
+    # np.save('Data/corr_areas', corr_areas)
+    # np.save('Data/corr_widths', corr_widths)
 
 
     # Stats
     # plot_hist('corr_areas.npy', 'areas')
 
-    # np_load_old = np.load
-    # np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
-    # incorrect = np.load('Data/incorrect.npy')
-    # np.load = np_load_old
+    np_load_old = np.load
+    np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
+    incorrect = np.load('Data/incorrect.npy')
+    np.load = np_load_old
     
-    # for i in range(0,30):
-    #     show_pred(*incorrect[i] , IMG_NAME=str(i)+'res.png')
+    for i in range(0,100):
+        show_pred(*incorrect[i] , IMG_NAME='Data/'+str(i)+'res.png')

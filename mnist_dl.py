@@ -75,9 +75,10 @@ def show_image(dataset, title, ROWS=5, COLUMNS=10):
     for i in range(1, COLUMNS * ROWS + 1):
         plt.subplot(ROWS, COLUMNS, i)
         plt.axis('off')
-        plt.imshow(dataset.data[i])
+        plt.imshow(dataset.data[i], cmap='gray_r')
     fig.suptitle(title)
-    plt.show()
+    # plt.show()
+    plt.savefig('data.png')
 
 def get_accuracy(model, dataloader, device):
     correct = 0 
@@ -174,7 +175,8 @@ def plot_metric(train_metric, val_metric, metric):
     ax.plot(val_metric, color='red', label='Validation '+metric)
     ax.set(title=metric+" over epochs", xlabel='Epoch', ylabel='Loss') 
     ax.legend()
-    fig.show()
+    # fig.show()
+    plt.savefig(metric+'.png')
     
     plt.style.use('default')
 
@@ -185,7 +187,7 @@ def predict(model, image, device):
         image = image.to(device)
         _, probs = model(image)
     
-    return torch.argmax(probs)
+    return torch.argmax(probs), torch.max(probs * 100)
 
 def test_model(MODEL_NAME, model, valset, device, ROWS = 5, COLUMNS = 10):
     model = model.to(device)
@@ -206,7 +208,8 @@ def test_model(MODEL_NAME, model, valset, device, ROWS = 5, COLUMNS = 10):
         title = f'{torch.argmax(probs)} ({torch.max(probs * 100):.0f}%)'
         plt.title(title, fontsize=7)
     fig.suptitle('Test predictions')
-    plt.show()
+    # plt.show()
+    plt.savefig('result.png')
 
 def flow():
     # parameters
@@ -250,17 +253,18 @@ def flow():
     image = valset[5][0].unsqueeze(0)
     pred = predict(model, image, device)
     plt.imshow(image[0][0])
-    plt.show()
+    # plt.show()
+    plt.savefig('prediction.png')
     print(pred)
 
 if __name__ == "__main__":
-    # flow()
-    BATCH_SIZE = 32
-    N_CLASSES = 10
+    flow()
+    # BATCH_SIZE = 32
+    # N_CLASSES = 10
 
-    trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
-    show_image(trainset, 'MNIST Dataset - preview')
+    # trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
+    # show_image(trainset, 'MNIST Dataset - preview')
 
-    model = Model(N_CLASSES).to(device)
-    MODEL_NAME = 'model.dth'
-    test_model(MODEL_NAME, model, valset, device)
+    # model = Model(N_CLASSES).to(device)
+    # MODEL_NAME = 'model.dth'
+    # test_model(MODEL_NAME, model, valset, device)
