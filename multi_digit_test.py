@@ -83,11 +83,18 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load('model.dth'))
 
     incorrect, corr_areas, corr_widths = test_set(model, imgs, labels)
-    np.save('incorrect', incorrect)
-    np.save('corr_areas', corr_areas)
-    np.save('corr_widths', corr_widths)
+    np.save('Data/incorrect', incorrect)
+    np.save('Data/corr_areas', corr_areas)
+    np.save('Data/corr_widths', corr_widths)
+
 
     # Stats
     # plot_hist('corr_areas.npy', 'areas')
-    # for i in range(0,10):
+
+    # np_load_old = np.load
+    # np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
+    # incorrect = np.load('Data/incorrect.npy')
+    # np.load = np_load_old
+    
+    # for i in range(0,30):
     #     show_pred(*incorrect[i] , IMG_NAME=str(i)+'res.png')

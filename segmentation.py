@@ -22,7 +22,7 @@ def get_extract(img, output, i):
     mask_i[ output == i ] = 1
     mask_i = mask_i.astype(np.uint8)
 
-    kernel = np.ones((2,2), np.uint8) 
+    kernel = np.ones((3,3), np.uint8) 
     mask_i = cv2.dilate(mask_i, kernel, iterations=1) 
 
     extract = img * mask_i
@@ -57,15 +57,35 @@ def segment(img, stride = 20):
         if width >= 22:
             nb_components_j = 2
             level = 150
-            while level < 255 and nb_components_j < 3:
+            bad_components = 0
+            while level < 255 and nb_components_j-bad_components < 3:
+                bad_components = 0
                 _, thresh = cv2.threshold(extracted_digit, level, 255, cv2.THRESH_TOZERO)
                 nb_components_j, output_j, stats_j, centroids_j = cv2.connectedComponentsWithStats(thresh, connectivity = 4)
+
+                # print(level, nb_components_j)
+                # extracts = []
+
+                for j in range(1,nb_components_j):
+                    left, top, width, height, area = stats_j[j]
+
+                    # extracted_digit = get_extract(img, output_j, j)
+                    # extract = crop(stats_j[j], extracted_digit)
+                    # extracts.append(extract)
+                    # print(area)
+
+                    if area < 45:
+                        bad_components += 1
+                # show(*extracts)
+                # print(bad_components)
                 level += stride
-            
+
             if nb_components_j >= 3:
                 join = 1
-                for j in range(1, 3):
+                for j in range(1, nb_components_j):
                     left, top, width, height, area = stats_j[j]
+                    if area < 45:
+                        continue
                     extracted_digit = get_extract(img, output_j, j)
                     digit = crop(stats_j[j], extracted_digit)
                     widths.append(width)
@@ -83,9 +103,9 @@ def segment(img, stride = 20):
 if __name__ == "__main__":
     imgs = np.load('Data/data0.npy')
 
-    img = imgs[34]
+    img = imgs[6]
     show(img)
-    digits, _ = segment(img)
+    digits, _, _= segment(img)
     show(*digits)
 
     # anom = []
