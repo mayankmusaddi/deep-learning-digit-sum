@@ -21,19 +21,25 @@ def get_extract(img, output, i):
     mask_i = np.zeros((output.shape))
     mask_i[ output == i ] = 1
     mask_i = mask_i.astype(np.uint8)
+
+    kernel = np.ones((2,2), np.uint8) 
+    mask_i = cv2.dilate(mask_i, kernel, iterations=1) 
+
     extract = img * mask_i
     return extract
 
 def crop(stat, extract):
     left, top, width, height, area = stat
-    x = int(left + (width/2) - 14)
-    y = int(top + (height/2) - 14)
+    extract = np.pad(extract, pad_width=14, mode='constant', constant_values=0)
+    x = int(left + (width/2))
+    y = int(top + (height/2))
     cropped = extract[y: y+28, x: x+28]
     return cropped
 
 def segment(img, stride = 20):
     digits = []
-
+    areas = []
+    widths = []
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(img, connectivity = 4)
     for i in range(1,nb_components):
         left, top, width, height, area = stats[i]
@@ -42,14 +48,13 @@ def segment(img, stride = 20):
         # # Debug Statement
         # print(stats[i])
         # show(extracted_digit)
-
         if area < 45:
             continue
 
         join = 0
 
         # If 2 digits overlap
-        if width >= 24:
+        if width >= 22:
             nb_components_j = 2
             level = 150
             while level < 255 and nb_components_j < 3:
@@ -63,30 +68,33 @@ def segment(img, stride = 20):
                     left, top, width, height, area = stats_j[j]
                     extracted_digit = get_extract(img, output_j, j)
                     digit = crop(stats_j[j], extracted_digit)
+                    widths.append(width)
+                    areas.append(area)
                     digits.append(digit)
         
         if not join:
             # Crop
             digit = crop(stats[i], extracted_digit)
+            widths.append(width)
+            areas.append(area)
             digits.append(digit)
-    return digits
+    return digits, areas, widths
 
 if __name__ == "__main__":
     imgs = np.load('Data/data0.npy')
 
-    # img = imgs[158]
-    # show(img)
-    # digits = segment(img)
-    # print(len(digits))
-    # show(*digits)
+    img = imgs[34]
+    show(img)
+    digits, _ = segment(img)
+    show(*digits)
 
-    anom = []
-    for i in range(0,10000):
-        img = imgs[i]
-        digits = segment(img)
-        if len(digits) != 4:
-            anom.append(i)
-    print(anom)
-    print(len(anom))
-    anom_imgs = [imgs[i] for i in anom]
-    show(*anom_imgs[:10])
+    # anom = []
+    # for i in range(0,10000):
+    #     img = imgs[i]
+    #     digits = segment(img)
+    #     if len(digits) != 4:
+    #         anom.append(i)
+    # print(anom)
+    # print(len(anom))
+    # anom_imgs = [imgs[i] for i in anom]
+    # show(*anom_imgs[:10])

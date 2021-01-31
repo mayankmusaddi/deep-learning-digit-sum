@@ -187,7 +187,7 @@ def predict(model, image, device):
     
     return torch.argmax(probs)
 
-def test_model(MODEL_NAME, model, valset, device, ROWS = 1, COLUMNS = 1):
+def test_model(MODEL_NAME, model, valset, device, ROWS = 5, COLUMNS = 10):
     model = model.to(device)
     model.load_state_dict(torch.load(MODEL_NAME))
 
