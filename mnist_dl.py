@@ -78,7 +78,7 @@ def show_image(dataset, title, ROWS=5, COLUMNS=10):
         plt.imshow(dataset.data[i], cmap='gray_r')
     fig.suptitle(title)
     # plt.show()
-    plt.savefig('data.png')
+    plt.savefig('mnist-data.png')
 
 def get_accuracy(model, dataloader, device):
     correct = 0 
@@ -209,7 +209,7 @@ def test_model(MODEL_NAME, model, valset, device, ROWS = 5, COLUMNS = 10):
         plt.title(title, fontsize=7)
     fig.suptitle('Test predictions')
     # plt.show()
-    plt.savefig('result.png')
+    plt.savefig('mnist-result.png')
 
 def flow():
     # parameters
@@ -251,20 +251,20 @@ def flow():
 
     # Predict Image
     image = valset[5][0].unsqueeze(0)
-    pred = predict(model, image, device)
+    pred, _ = predict(model, image, device)
     plt.imshow(image[0][0])
     # plt.show()
     plt.savefig('prediction.png')
     print(pred)
 
 if __name__ == "__main__":
-    flow()
-    # BATCH_SIZE = 32
-    # N_CLASSES = 10
+    # flow()
+    BATCH_SIZE = 32
+    N_CLASSES = 10
 
-    # trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
-    # show_image(trainset, 'MNIST Dataset - preview')
+    trainset, valset, trainloader, valloader = load_data(BATCH_SIZE)
+    show_image(trainset, 'MNIST Dataset - preview')
 
-    # model = Model(N_CLASSES).to(device)
-    # MODEL_NAME = 'model.dth'
-    # test_model(MODEL_NAME, model, valset, device)
+    model = Model(N_CLASSES).to(device)
+    MODEL_NAME = 'model.dth'
+    test_model(MODEL_NAME, model, valset, device)

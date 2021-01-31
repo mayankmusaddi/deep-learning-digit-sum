@@ -107,14 +107,3 @@ if __name__ == "__main__":
     show(img)
     digits, _, _= segment(img)
     show(*digits)
-
-    # anom = []
-    # for i in range(0,10000):
-    #     img = imgs[i]
-    #     digits = segment(img)
-    #     if len(digits) != 4:
-    #         anom.append(i)
-    # print(anom)
-    # print(len(anom))
-    # anom_imgs = [imgs[i] for i in anom]
-    # show(*anom_imgs[:10])
